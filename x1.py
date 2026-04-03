@@ -100,8 +100,7 @@ emg_std = np.std(emg)
 emg_max = np.max(emg)
 emg_features = {"emg_rms": emg_rms,
     "emg_std": emg_std,
-    "emg_max": emg_max,
-    "emg_activity": np.sum(emg > np.mean(emg))}
+    "emg_max": emg_max}
 
 
 ### RESP ###
@@ -119,5 +118,4 @@ eda_features = { "eda_mean": np.mean(eda),
     "eda_std": np.std(eda),
     "eda_max": np.max(eda),
     "eda_min": np.min(eda),
-    "eda_slope": np.mean(eda_diff),
-    "eda_peak_activity": np.sum(eda_diff > np.std(eda_diff))}
+    "eda_slope": np.mean(eda_diff)}
