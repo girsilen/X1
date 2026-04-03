@@ -87,7 +87,7 @@ r_peaks = peaks
 # RR 
 rr = np.diff(r_peaks) / fs
 hrv = { "mean_hr": 60 / np.mean(rr),
-    "sdnn": np.std(rr_intervals),
+    "sdnn": np.std(rr),
     "rmssd": np.sqrt(np.mean(np.diff(rr)**2)),
     "min_rr": np.min(rr),
     "max_rr": np.max(rr)}
@@ -119,3 +119,6 @@ eda_features = { "eda_mean": np.mean(eda),
     "eda_max": np.max(eda),
     "eda_min": np.min(eda),
     "eda_slope": np.mean(eda_diff)}
+    # +++ phasic and tonic 
+
+#### WINDOWS ####
