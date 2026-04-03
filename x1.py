@@ -63,6 +63,7 @@ resp = sosfiltfilt(sos, resp)
 eda_low = 0.5 / nyquist
 eda_b, eda_a = butter(4, eda_low, btype='low')
 eda = filtfilt(eda_b, eda_a, biosignal[:, 3])
+# we can use wavelet instaed 
 
 # PREPROCESSED SIGNALS PLOT
 signals = [ecg, emg, resp, eda]
