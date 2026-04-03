@@ -119,5 +119,3 @@ eda_features = { "eda_mean": np.mean(eda),
     "eda_max": np.max(eda),
     "eda_min": np.min(eda),
     "eda_slope": np.mean(eda_diff)}
-
-#### WINDOWS ####
