@@ -3,7 +3,7 @@ from scipy.signal import butter, filtfilt, find_peaks, detrend, sosfiltfilt
 import matplotlib.pyplot as plt
 import numpy as np
 
-data = scipy.io.loadmat('X_1.mat') # python dictionary
+data = scipy.io.loadmat('X_1.mat')
 # print(data.keys()) # dict_keys(['__header__', '__version__', '__globals__', 'X_1'])
 
 signal = data['X_1'] # nested array
@@ -12,7 +12,8 @@ signal = data['X_1'] # nested array
 biosignal = signal[0, 0]
 # print(biosignal.shape) # (120000, 4) -> 120000 samples and 4 channels
 
-# 120000 samples in  4 ??? minutes -> 200Hz
+# 120000 samples in  4 ??? minutes -> 500Hz
+# change to 200 Hz if 10 minutes 
 fs = 500 
 nyquist = fs / 2
 
@@ -32,8 +33,8 @@ plt.show()
 
 #### PREPROCESSING ####
 ### ECG ###
-lowcut = 0.5
-highcut = 40
+lowcut = 0.5 # for the elimination of the drift (breathing-movement)
+highcut = 40 # noise 
 low = lowcut / nyquist
 high = highcut / nyquist
 b, a = butter(4, [low, high], btype='band')
@@ -65,11 +66,7 @@ eda = filtfilt(eda_b, eda_a, biosignal[:, 3])
 
 # PREPROCESSED SIGNALS PLOT
 signals = [ecg, emg, resp, eda]
-labels = ['ECG', 'EMG', 'RESP', 'EDA']
-colors = ['b', 'r', 'g', 'm']
-
 fig, axs = plt.subplots(4, 1, figsize=(10, 10), sharex=True)
-
 for i in range(4):
     axs[i].plot(time[:30000], signals[i][:30000], color=colors[i])
     axs[i].set_title(labels[i])
@@ -82,26 +79,27 @@ plt.show()
 #### FEATURES #####
 ### ECG ###
 # simple version  R-PEAK
-peaks, _ = find_peaks(ecg, distance=0.6*fs, height=np.mean(ecg))
+ecg_mean = np.mean(ecg)
+peaks, _ = find_peaks(ecg, distance=0.6*fs, height=ecg_mean)
 r_peaks = peaks
 # HRV 
 # RR 
-rr_intervals = np.diff(r_peaks) / fs
-hrv_features = { "mean_hr": 60 / np.mean(rr_intervals),
+rr = np.diff(r_peaks) / fs
+hrv = { "mean_hr": 60 / np.mean(rr),
     "sdnn": np.std(rr_intervals),
-    "rmssd": np.sqrt(np.mean(np.diff(rr_intervals)**2)),
-    "min_rr": np.min(rr_intervals),
-    "max_rr": np.max(rr_intervals)}
+    "rmssd": np.sqrt(np.mean(np.diff(rr)**2)),
+    "min_rr": np.min(rr),
+    "max_rr": np.max(rr)}
 
 
 ### EMG ###
+# https://www.kubios.com/blog/hrv-analysis-methods/
 emg_rms = np.sqrt(np.mean(emg**2))
 emg_std = np.std(emg)
 emg_max = np.max(emg)
 emg_features = {"emg_rms": emg_rms,
     "emg_std": emg_std,
-    "emg_max": emg_max,
-    "emg_activity": np.sum(emg > np.mean(emg))}
+    "emg_max": emg_max}
 
 
 ### RESP ###
@@ -119,5 +117,6 @@ eda_features = { "eda_mean": np.mean(eda),
     "eda_std": np.std(eda),
     "eda_max": np.max(eda),
     "eda_min": np.min(eda),
-    "eda_slope": np.mean(eda_diff),
-    "eda_peak_activity": np.sum(eda_diff > np.std(eda_diff))}
+    "eda_slope": np.mean(eda_diff)}
+
+#### WINDOWS ####
